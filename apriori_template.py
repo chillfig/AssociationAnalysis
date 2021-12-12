@@ -190,11 +190,38 @@ def apriori_gen(freq_sets, k):
     return candidate_list
     # TODO
 
+def delete_multiple_element(list_object, indices):
+        indices = sorted(indices, reverse=True)
+        for idx in indices:
+            list_object.pop(idx)
 
-def loadDataSet(fileName, delim=','):
-    fr = open(fileName)
-    stringArr = [line.strip().split(delim) for line in fr.readlines()]
-    return stringArr
+
+def loadDataSet(fileName, delim=';'):
+    with open(fileName, 'r') as file:
+            list_of_indices = [2,3,4,5,6,7,8,9,10,11,12,13,15,16,17,18,19,21,22,23,24,25,26,27,28,29,30,31]
+            # indices of interest: 0, 1, 14, 20, 32
+            dataset = []
+            lines = file.readlines()[1:]
+            for line in lines:
+                items = line.strip().split(';')
+                new_items = []
+                for i in range(len(items)):
+                    new_items.append(items[i].strip('""'))
+                if new_items[21] == 'no':
+                    new_items[21] = 'no_internet'
+                elif new_items[21] == 'yes':
+                    new_items[21] = 'yes_internet'
+                if int(new_items[32]) > 15:
+                    new_items[32] = 'high score'
+                elif int(new_items[32]) > 10:
+                    new_items[32] = 'good score'
+                elif int(new_items[2]) > 5:
+                    new_items[32] = 'low score'
+                else:
+                    new_items[32] = 'bad score'
+                delete_multiple_element(new_items, list_of_indices)
+                dataset.append(new_items)
+    return dataset
 
 
 
@@ -224,7 +251,8 @@ if __name__ == '__main__':
     elif len(sys.argv)==4:
         F, support = run_apriori(sys.argv[1], float(sys.argv[2]), bool_transfer(sys.argv[3]))
     else:
-        raise ValueError('Usage: python apriori_templete.py <data_path> <min_support> <is_verbose>')
+        F, support = run_apriori('student-por.csv', 0.5)
+        #raise ValueError('Usage: python apriori_templete.py <data_path> <min_support> <is_verbose>')
     print(F)
     print(support)
 
